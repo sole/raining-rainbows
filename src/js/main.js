@@ -15,7 +15,7 @@ window.onload = function() {
 
 	var c = makeCloud();
 	// TMP
-	c.x = 50;
+	c.x = 200;
 	c.y = 50;
 
 	requestAnimationFrame(render);
@@ -59,29 +59,36 @@ window.onload = function() {
 
 	function Cloud() {
 
-		var minBubbleRadius = 20;
 		this.x = 0;
 		this.y = 0;
 
 		this.bubbles = [];
-		this.rainbow = { height: 0, dstHeight: 1 };
+		this.rainbow = { x: 0, height: 0, dstHeight: 1 };
 
 		var rainbowTween = new TWEEN.Tween(this.rainbow)
 			.to({ height: this.rainbow.dstHeight }, 500)
 			.easing(TWEEN.Easing.Exponential.In);
 			
 		var bubbleRadius = 50;
-		var numBubbles = Math.round(5 * Math.random());
+		var numBubbles = 5; // Math.max(5, Math.round(9 * Math.random()));
 
-		var offsetX = 0;
-		var distance = bubbleRadius * 3;
-		var incX = distance / numBubbles;
+		var distance = bubbleRadius * 4;
+		var offsetX = -distance / 2;
+		var incX = distance / (numBubbles - 1);
+		
+		this.rainbow.width = distance * 0.6;
+		this.rainbow.x = - this.rainbow.width * 0.5;
+		
+		var minBubbleRadius = 20;
+
+		
 		for(var i = 0; i < numBubbles; i++) {
 			var bubble =  {
-				x: offsetX + incX * Math.random(),
+				x: offsetX,
 				y: Math.random() * bubbleRadius / 2,
 				radius: 0,
-				dstRadius: Math.random() * bubbleRadius + minBubbleRadius
+				//dstRadius: Math.max(minBubbleRadius, Math.random() * bubbleRadius)
+				dstRadius: bubbleRadius / 4
 			};
 
 			var bubbleTween = new TWEEN.Tween(bubble)
@@ -106,8 +113,10 @@ window.onload = function() {
 
 			ctx.fillStyle = 'red';
 			if(this.rainbow.height > 0) {
+				var rainbowOrigin = ox + this.rainbow.x;
+				var rainbowWidth = this.rainbow.width;
 				var rainbowHeight = (canvas.height - oy) * this.rainbow.height;
-				var rainbowGradient = ctx.createLinearGradient(ox, oy, ox+100, oy);
+				var rainbowGradient = ctx.createLinearGradient(rainbowOrigin, oy, rainbowOrigin + rainbowWidth, oy);
 				rainbowGradient.addColorStop(0, 'red');
 				rainbowGradient.addColorStop(0.2, 'red');
 				rainbowGradient.addColorStop(0.21, 'orange');
@@ -122,7 +131,7 @@ window.onload = function() {
 				ctx.fillStyle = rainbowGradient;
 
 				ctx.beginPath();
-				ctx.fillRect(ox, oy, 100, rainbowHeight);
+				ctx.fillRect(rainbowOrigin, oy, rainbowWidth, rainbowHeight);
 			}
 
 			this.bubbles.forEach(function(b) {
@@ -141,6 +150,14 @@ window.onload = function() {
 				ctx.fill();
 				
 			});
+
+
+			/* debug
+			ctx.fillStyle = '#ff00ff';
+			ctx.beginPath();
+			ctx.fillRect(ox, oy, 10, 10);
+			ctx.fill();
+			*/
 		};
 
 	}
