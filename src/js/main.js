@@ -19,7 +19,7 @@ window.onload = function() {
 	var c = makeCloud();
 	c.x = Math.round(canvas.width * 0.5);
 
-	for(var i = 0; i < 5; i++) {
+	for(var i = 0; i < 10; i++) {
 		c = makeCloud(cloudDelay * (i + 1));
 		c.x = canvas.width + c.width * (i + 1);
 	}
@@ -41,7 +41,7 @@ window.onload = function() {
 		delay = delay !== undefined ? delay : 0;
 		
 		var x = canvas.width;
-		var y = (Math.random() * 0.2 + 0.3) * canvas.height;
+		var y = (Math.random() * 0.4 + 0.2) * canvas.height;
 		var cloud = new Cloud(delay);
 		
 		cloud.x = x + cloud.width;
@@ -178,8 +178,6 @@ window.onload = function() {
 			rt.chain.apply(rt, bts);
 			rt.start();
 				
-			
-
 		}
 
 		this.render = function(ctx) {
