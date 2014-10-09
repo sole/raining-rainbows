@@ -15,8 +15,8 @@ window.onload = function() {
 
 	var c = makeCloud();
 	// TMP
-	c.x = 200;
-	c.y = 50;
+	//c.x = 200;
+	//c.y = 50;
 
 	requestAnimationFrame(render);
 
@@ -75,6 +75,10 @@ window.onload = function() {
 		var distance = bubbleRadius * 4;
 		var offsetX = -distance / 2;
 		var incX = distance / (numBubbles - 1);
+		var angleInc = 2 * Math.PI / numBubbles;
+		var angle = Math.PI * 2 * Math.random();
+		var cloudRadiusX = distance / 3;
+		var cloudRadiusY = distance / 7;
 		
 		this.rainbow.width = distance * 0.6;
 		this.rainbow.x = - this.rainbow.width * 0.5;
@@ -83,11 +87,14 @@ window.onload = function() {
 
 		for(var i = 0; i < numBubbles; i++) {
 
+			var bx = cloudRadiusX * Math.sin(angle);
+			var by = cloudRadiusY * Math.cos(angle);
+
 			var bubble =  {
-				x: offsetX,
-				y: Math.random() * bubbleRadius / 2,
+				x: bx,
+				y: by,
 				radius: 0,
-				dstRadius: (1 - Math.abs(offsetX) / distance) * bubbleRadius
+				dstRadius: (1 - Math.abs(bx) / distance) * bubbleRadius + Math.random() * bubbleRadius * 0.25
 			};
 
 			var bubbleTween = new TWEEN.Tween(bubble)
@@ -103,6 +110,7 @@ window.onload = function() {
 			}
 
 			offsetX += incX;
+			angle += angleInc;
 		}
 
 		this.render = function(ctx) {
