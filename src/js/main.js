@@ -63,7 +63,12 @@ window.onload = function() {
 		this.y = 0;
 
 		this.bubbles = [];
+		this.rainbow = { height: 0, dstHeight: 1 };
 
+		var rainbowTween = new TWEEN.Tween(this.rainbow)
+			.to({ height: this.rainbow.dstHeight }, 500)
+			.easing(TWEEN.Easing.Exponential.In);
+			
 		var bubbleRadius = 75;
 		var numBubbles = Math.round(5 * Math.random());
 
@@ -82,12 +87,22 @@ window.onload = function() {
 				.start();
 			
 			this.bubbles.push(bubble);
+
+			if(i + 1 == numBubbles) {
+				bubbleTween.chain(rainbowTween);
+			}
 		}
 
 		this.render = function(ctx) {
 			
 			var ox = this.x;
 			var oy = this.y;
+
+			ctx.fillStyle = 'red';
+			if(this.rainbow.height > 0) {
+				ctx.beginPath();
+				ctx.fillRect(ox, oy, 100, (canvas.height - oy) * this.rainbow.height);
+			}
 
 			this.bubbles.forEach(function(b) {
 
@@ -103,6 +118,7 @@ window.onload = function() {
 				ctx.beginPath();
 				ctx.arc(px, py, b.radius, 0, 2 * Math.PI, false);
 				ctx.fill();
+				
 			});
 		};
 
