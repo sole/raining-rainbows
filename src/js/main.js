@@ -59,6 +59,7 @@ window.onload = function() {
 
 	function Cloud() {
 
+		var minBubbleRadius = 20;
 		this.x = 0;
 		this.y = 0;
 
@@ -69,19 +70,22 @@ window.onload = function() {
 			.to({ height: this.rainbow.dstHeight }, 500)
 			.easing(TWEEN.Easing.Exponential.In);
 			
-		var bubbleRadius = 75;
+		var bubbleRadius = 50;
 		var numBubbles = Math.round(5 * Math.random());
 
+		var offsetX = 0;
+		var distance = bubbleRadius * 3;
+		var incX = distance / numBubbles;
 		for(var i = 0; i < numBubbles; i++) {
 			var bubble =  {
-				x: Math.random() * bubbleRadius * 2,
+				x: offsetX + incX * Math.random(),
 				y: Math.random() * bubbleRadius / 2,
 				radius: 0,
-				dstRadius: Math.random() * bubbleRadius
+				dstRadius: Math.random() * bubbleRadius + minBubbleRadius
 			};
 
 			var bubbleTween = new TWEEN.Tween(bubble)
-				.to({ radius: bubble.dstRadius }, 1500)
+				.to({ radius: bubble.dstRadius }, 1000)
 				.easing(TWEEN.Easing.Exponential.InOut)
 				.delay(i * 200)
 				.start();
@@ -91,6 +95,8 @@ window.onload = function() {
 			if(i + 1 == numBubbles) {
 				bubbleTween.chain(rainbowTween);
 			}
+
+			offsetX += incX;
 		}
 
 		this.render = function(ctx) {
