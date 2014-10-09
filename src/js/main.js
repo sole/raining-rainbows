@@ -51,7 +51,7 @@ window.onload = function() {
 		context.clearRect(0, 0, canvas.width, canvas.height);
 
 		clouds.forEach(function(c) {
-			c.render(t, context);
+			c.render(context);
 		});
 	
 	}
@@ -69,20 +69,24 @@ window.onload = function() {
 
 		for(var i = 0; i < numBubbles; i++) {
 			var bubble =  {
-				x: Math.random() * bubbleRadius,
+				x: Math.random() * bubbleRadius * 2,
 				y: Math.random() * bubbleRadius / 2,
-				radius: Math.random() * bubbleRadius
+				radius: 0,
+				dstRadius: Math.random() * bubbleRadius
 			};
+
+			var bubbleTween = new TWEEN.Tween(bubble)
+				.to({ radius: bubble.dstRadius }, 1000)
+				.easing(TWEEN.Easing.Exponential.InOut)
+				.delay(i * 100)
+				.start();
 			
 			this.bubbles.push(bubble);
 		}
 
-		var self = this;
-	
-		this.render = function(time, ctx) {
+		this.render = function(ctx) {
 			ctx.fillStyle = '0x666666';
-			//ctx.fillRect(self.x, self.y, 10, 10);
-			//
+			
 			var ox = this.x;
 			var oy = this.y;
 
