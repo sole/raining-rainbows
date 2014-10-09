@@ -76,23 +76,32 @@ window.onload = function() {
 			};
 
 			var bubbleTween = new TWEEN.Tween(bubble)
-				.to({ radius: bubble.dstRadius }, 1000)
+				.to({ radius: bubble.dstRadius }, 1500)
 				.easing(TWEEN.Easing.Exponential.InOut)
-				.delay(i * 100)
+				.delay(i * 200)
 				.start();
 			
 			this.bubbles.push(bubble);
 		}
 
 		this.render = function(ctx) {
-			ctx.fillStyle = '0x666666';
 			
 			var ox = this.x;
 			var oy = this.y;
 
 			this.bubbles.forEach(function(b) {
+
+				var px = ox + b.x;
+				var py = oy + b.y;
+				var gradient = ctx.createRadialGradient(px, py, 0, px, py, b.radius);
+
+				gradient.addColorStop(0, '#8C8F92');
+				gradient.addColorStop(1, '#5C5C5E');
+				
+				ctx.fillStyle = gradient;
+
 				ctx.beginPath();
-				ctx.arc(ox + b.x, oy + b.y, b.radius, 0, 2 * Math.PI, false);
+				ctx.arc(px, py, b.radius, 0, 2 * Math.PI, false);
 				ctx.fill();
 			});
 		};
