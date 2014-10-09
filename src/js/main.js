@@ -100,8 +100,23 @@ window.onload = function() {
 
 			ctx.fillStyle = 'red';
 			if(this.rainbow.height > 0) {
+				var rainbowHeight = (canvas.height - oy) * this.rainbow.height;
+				var rainbowGradient = ctx.createLinearGradient(ox, oy, ox+100, oy);
+				rainbowGradient.addColorStop(0, 'red');
+				rainbowGradient.addColorStop(0.2, 'red');
+				rainbowGradient.addColorStop(0.21, 'orange');
+				rainbowGradient.addColorStop(0.4, 'orange');
+				rainbowGradient.addColorStop(0.41, 'yellow');
+				rainbowGradient.addColorStop(0.6, 'yellow');
+				rainbowGradient.addColorStop(0.61, '#0f0');
+				rainbowGradient.addColorStop(0.8, '#0f0');
+				rainbowGradient.addColorStop(0.81, '#1D74FE');
+				rainbowGradient.addColorStop(1, '#1D74FE');
+
+				ctx.fillStyle = rainbowGradient;
+
 				ctx.beginPath();
-				ctx.fillRect(ox, oy, 100, (canvas.height - oy) * this.rainbow.height);
+				ctx.fillRect(ox, oy, 100, rainbowHeight);
 			}
 
 			this.bubbles.forEach(function(b) {
