@@ -81,14 +81,13 @@ window.onload = function() {
 		
 		var minBubbleRadius = 20;
 
-		
 		for(var i = 0; i < numBubbles; i++) {
+
 			var bubble =  {
 				x: offsetX,
 				y: Math.random() * bubbleRadius / 2,
 				radius: 0,
-				//dstRadius: Math.max(minBubbleRadius, Math.random() * bubbleRadius)
-				dstRadius: bubbleRadius / 4
+				dstRadius: (1 - Math.abs(offsetX) / distance) * bubbleRadius
 			};
 
 			var bubbleTween = new TWEEN.Tween(bubble)
