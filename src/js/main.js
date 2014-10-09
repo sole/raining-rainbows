@@ -3,6 +3,7 @@ window.onload = function() {
 	var canvas;
 	var context;
 	var clouds = [];
+	var cloudDelay = 5000;
 
 	canvas = document.createElement('canvas');
 	context = canvas.getContext('2d');
@@ -13,11 +14,16 @@ window.onload = function() {
 
 	updateCanvasSize();
 
-	var c = makeCloud();
-	// TMP
-	//c.x = 200;
-	//c.y = 50;
 
+	// set initial cloud in the middle
+	var c = makeCloud();
+	c.x = Math.round(canvas.width * 0.5);
+
+	for(var i = 0; i < 5; i++) {
+		c = makeCloud(cloudDelay * (i + 1));
+		c.x = canvas.width + c.width * (i + 1);
+	}
+	
 	requestAnimationFrame(render);
 
 	//
@@ -28,36 +34,72 @@ window.onload = function() {
 
 		canvas.width = w;
 		canvas.height = h;
+
+		console.log('canvas size', canvas.width, canvas.height);
 	}
 
-	function makeCloud() {
-		var x = Math.random() * canvas.width;
-		var y = Math.random() * canvas.height;
-		console.log('cloud at', x, y);
-		var cloud = new Cloud();
-		cloud.x = x;
+	function makeCloud(delay) {
+
+		delay = delay !== undefined ? delay : 0;
+		
+		var x = canvas.width;
+		var y = (0.15 + Math.random()) * canvas.height * 0.25;
+		var cloud = new Cloud(delay);
+		
+		cloud.x = x + cloud.width;
 		cloud.y = y;
+		cloud.speed = 25 + 25 * Math.random();
 
 		clouds.push(cloud);
 
 		return cloud;
+		
 	}
+
+
+	var lastRenderTime = 0;
 
 	function render(t) {
 
 		requestAnimationFrame(render);
 		TWEEN.update(t);
 		
+		var elapsed = (t - lastRenderTime) * 0.001;
+
 		context.clearRect(0, 0, canvas.width, canvas.height);
 
 		clouds.forEach(function(c) {
 			c.render(context);
+			c.x -= elapsed * c.speed;
 		});
+
+
+		var i = 0;
+		var numDead = 0;
+
+		while(i < clouds.length) {
+			
+			var c = clouds[i];
+
+			if(c.x + c.width < 0) {
+				clouds.splice(i, 1);
+				numDead++;
+			}
+
+			i++;
+		}
+
+		for(i = 0; i < numDead; i++) {
+			var newC = makeCloud(cloudDelay * ( 1 + i ));
+			newC.x = canvas.width + newC.width * (i +1);
+		}
+
+		lastRenderTime = t;
 	
 	}
 
 
-	function Cloud() {
+	function Cloud(delay) {
 
 		this.x = 0;
 		this.y = 0;
@@ -80,6 +122,7 @@ window.onload = function() {
 		var cloudRadiusX = distance / 3;
 		var cloudRadiusY = distance / 7;
 		
+		this.width = distance + bubbleRadius;
 		this.rainbow.width = distance * 0.6;
 		this.rainbow.x = - this.rainbow.width * 0.5;
 		
@@ -100,7 +143,7 @@ window.onload = function() {
 			var bubbleTween = new TWEEN.Tween(bubble)
 				.to({ radius: bubble.dstRadius }, 1000)
 				.easing(TWEEN.Easing.Exponential.InOut)
-				.delay(i * 200)
+				.delay(delay + i * 200)
 				.start();
 			
 			this.bubbles.push(bubble);
