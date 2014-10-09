@@ -15,8 +15,8 @@ window.onload = function() {
 
 	var c = makeCloud();
 	// TMP
-	c.x = 0;
-	c.y = 0;
+	c.x = 50;
+	c.y = 50;
 
 	requestAnimationFrame(render);
 
@@ -62,11 +62,35 @@ window.onload = function() {
 		this.x = 0;
 		this.y = 0;
 
+		this.bubbles = [];
+
+		var bubbleRadius = 75;
+		var numBubbles = Math.round(5 * Math.random());
+
+		for(var i = 0; i < numBubbles; i++) {
+			var bubble =  {
+				x: Math.random() * bubbleRadius,
+				y: Math.random() * bubbleRadius / 2,
+				radius: Math.random() * bubbleRadius
+			};
+			
+			this.bubbles.push(bubble);
+		}
+
 		var self = this;
 	
 		this.render = function(time, ctx) {
 			ctx.fillStyle = '0x666666';
-			ctx.fillRect(self.x, self.y, 10, 10);
+			//ctx.fillRect(self.x, self.y, 10, 10);
+			//
+			var ox = this.x;
+			var oy = this.y;
+
+			this.bubbles.forEach(function(b) {
+				ctx.beginPath();
+				ctx.arc(ox + b.x, oy + b.y, b.radius, 0, 2 * Math.PI, false);
+				ctx.fill();
+			});
 		};
 
 	}
