@@ -34,8 +34,6 @@ window.onload = function() {
 
 		canvas.width = w;
 		canvas.height = h;
-
-		console.log('canvas size', canvas.width, canvas.height);
 	}
 
 	function makeCloud(delay) {
@@ -43,12 +41,12 @@ window.onload = function() {
 		delay = delay !== undefined ? delay : 0;
 		
 		var x = canvas.width;
-		var y = (0.15 + Math.random()) * canvas.height * 0.25;
+		var y = (Math.random() * 0.2 + 0.3) * canvas.height;
 		var cloud = new Cloud(delay);
 		
 		cloud.x = x + cloud.width;
 		cloud.y = y;
-		cloud.speed = 25 + 25 * Math.random();
+		cloud.speed = 25 + 50 * Math.random();
 
 		clouds.push(cloud);
 
@@ -109,10 +107,11 @@ window.onload = function() {
 
 		var rainbowTween = new TWEEN.Tween(this.rainbow)
 			.to({ height: this.rainbow.dstHeight }, 500)
-			.easing(TWEEN.Easing.Exponential.In);
+			.easing(TWEEN.Easing.Exponential.In)
+			.onComplete(evaporate);
 			
 		var bubbleRadius = 50;
-		var numBubbles = 5; // Math.max(5, Math.round(9 * Math.random()));
+		var numBubbles = Math.max(5, Math.round(7 * Math.random()));
 
 		var distance = bubbleRadius * 4;
 		var offsetX = -distance / 2;
@@ -124,9 +123,6 @@ window.onload = function() {
 		
 		this.width = distance + bubbleRadius;
 		this.rainbow.width = distance * 0.6;
-		this.rainbow.x = - this.rainbow.width * 0.5;
-		
-		var minBubbleRadius = 20;
 
 		for(var i = 0; i < numBubbles; i++) {
 
@@ -156,6 +152,36 @@ window.onload = function() {
 			angle += angleInc;
 		}
 
+		var self = this;
+		function evaporate() {
+			console.log('time to evaporate', self);
+			
+			var rt = new TWEEN.Tween(self.rainbow)
+				.to({ width: 0 }, 1000)
+				.easing(TWEEN.Easing.Exponential.In)
+				.delay(7000 + Math.random() * 2000);
+
+
+			var bts = [];
+			for(var i = 0; i < self.bubbles.length; i++) {
+				var b = self.bubbles[i];
+				var bt = new TWEEN.Tween(b)
+					.to({ radius: 0 }, 200)
+					.easing(TWEEN.Easing.Bounce.InOut)
+					.delay(i * 50);
+	
+				bts.push(bt);	
+
+			}
+
+			// URGH MEGAUGLY API
+			rt.chain.apply(rt, bts);
+			rt.start();
+				
+			
+
+		}
+
 		this.render = function(ctx) {
 			
 			var ox = this.x;
@@ -163,7 +189,7 @@ window.onload = function() {
 
 			ctx.fillStyle = 'red';
 			if(this.rainbow.height > 0) {
-				var rainbowOrigin = ox + this.rainbow.x;
+				var rainbowOrigin = ox - this.rainbow.width * 0.5;
 				var rainbowWidth = this.rainbow.width;
 				var rainbowHeight = (canvas.height - oy) * this.rainbow.height;
 				var rainbowGradient = ctx.createLinearGradient(rainbowOrigin, oy, rainbowOrigin + rainbowWidth, oy);
